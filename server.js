@@ -41,34 +41,31 @@ const dotenv = require("dotenv");
 const { bgCyan } = require("colors");
 const serverless = require("serverless-http");
 require("colors");
+
 const connectDb = require("./config/config");
 
-// dotenv config
 dotenv.config();
 
-// db config
-connectDb();
+let app;
 
-// rest object
-const app = express();
+try {
+  connectDb(); // Make sure this is not crashing
 
-// middlewares
-app.use(cors());
-app.use(express.json());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(morgan("dev"));
+  app = express();
 
-// routes
-app.use("/api/items", require("./routes/itemRoutes"));
-app.use("/api/users", require("./routes/userRoutes"));
-app.use("/api/bills", require("./routes/billsRoute"));
+  app.use(cors());
+  app.use(express.json());
+  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({ extended: false }));
+  app.use(morgan("dev"));
 
-// ❌ REMOVE THIS WHEN USING serverless-http
-// const PORT = process.env.PORT || 8080;
-// app.listen(PORT, () => {
-//   console.log(`Server Running On Port ${PORT}`.bgCyan.white);
-// });
+  // routes
+  app.use("/api/items", require("./routes/itemRoutes"));
+  app.use("/api/users", require("./routes/userRoutes"));
+  app.use("/api/bills", require("./routes/billsRoute"));
+} catch (err) {
+  console.error("App startup failed:", err);
+  throw err; // Let Vercel show the 500 error
+}
 
-// ✅ This is the correct export
 module.exports.handler = serverless(app);
