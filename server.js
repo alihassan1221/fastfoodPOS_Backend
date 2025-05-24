@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const dotanv = require("dotenv");
 const { bgCyan } = require("colors");
+const serverless = require('serverless-http');
 require("colors");
 const connectDb = require("./config/config");
 //dotenv config
@@ -32,3 +33,5 @@ const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`Server Running On Port ${PORT}`.bgCyan.white);
 });
+
+module.exports.handler = serverless(app);
