@@ -28,6 +28,11 @@ app.use("/api/bills", require("./routes/billsRoute"));
 //port
 const PORT = process.env.PORT;
 
+app.get("/", (req, res) => {
+  res.send("Welcome to the POS System Backend!");
+});
+
+
 //listen
 app.listen(PORT, () => {
   console.log(`Server Running On Port ${PORT}`.bgCyan.white);
