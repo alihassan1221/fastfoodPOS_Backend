@@ -15,14 +15,39 @@ const addBillsController = async (req, res) => {
 //get blls data
 const getBillsController = async (req, res) => {
   try {
-    const bills = await billsModel.find();
+    const bills = await billsModel.find({ isDeleted: { $ne: true } }); // exclude deleted bills
     res.send(bills);
   } catch (error) {
     console.log(error);
+    res.status(500).send({ message: "Server Error" });
   }
 };
+
+const deleteBillController = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const deletedBill = await billsModel.findByIdAndUpdate(
+      id,
+      { isDeleted: true },
+      { new: true }
+    );
+
+    if (!deletedBill) {
+      return res.status(404).send({ message: "Bill not found" });
+    }
+
+    res.send({ message: "Bill deleted successfully", bill: deletedBill });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ message: "Server Error" });
+  }
+};
+
+
 
 module.exports = {
   addBillsController,
   getBillsController,
+  deleteBillController,
 };
